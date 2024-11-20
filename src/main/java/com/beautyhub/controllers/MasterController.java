@@ -1,42 +1,43 @@
 package com.beautyhub.controllers;
 
 import com.beautyhub.dto.MasterDTO;
+import com.beautyhub.services.MasterService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.util.List;
 
 @RestController
-@RequestMapping("/masters")
-@Validated
+@RequestMapping("/api/masters")
 public class MasterController {
 
-    // Пример метода для создания нового мастера
-    @PostMapping("/create")
-    public ResponseEntity<String> createMaster(@Valid @RequestBody MasterDTO masterDTO) {
-        // Логика создания мастера (возможно, сохранение в базе данных)
-        return ResponseEntity.ok("Мастер успешно создан");
+    @Autowired
+    private MasterService masterService;
+
+    @GetMapping
+    public List<MasterDTO> getAllMasters() {
+        return masterService.getAllMasters();
     }
 
-    // Пример метода для получения данных мастера по ID
     @GetMapping("/{id}")
-    public ResponseEntity<String> getMasterById(@PathVariable Long id) {
-        // Логика получения мастера из базы данных по ID
-        return ResponseEntity.ok("Информация о мастере с ID: " + id);
+    public MasterDTO getMasterById(@PathVariable Long id) {
+        return masterService.getMasterById(id);
     }
 
-    // Пример метода для обновления данных мастера
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateMaster(@PathVariable Long id, @Valid @RequestBody MasterDTO masterDTO) {
-        // Логика обновления информации о мастере в базе данных
-        return ResponseEntity.ok("Мастер с ID " + id + " успешно обновлён");
+    @PostMapping
+    public MasterDTO createMaster(@RequestBody MasterDTO masterDTO) {
+        return masterService.createMaster(masterDTO);
     }
 
-    // Пример метода для удаления мастера по ID
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteMaster(@PathVariable Long id) {
-        // Логика удаления мастера из базы данных
-        return ResponseEntity.ok("Мастер с ID " + id + " успешно удалён");
+    @PutMapping("/{id}")
+    public MasterDTO updateMaster(@PathVariable Long id, @RequestBody MasterDTO masterDTO) {
+        return masterService.updateMaster(id, masterDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMaster(@PathVariable Long id) {
+        masterService.deleteMaster(id);
+        return ResponseEntity.noContent().build();
     }
 }

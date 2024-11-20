@@ -1,38 +1,49 @@
 package com.beautyhub.controllers;
 
 import com.beautyhub.dto.ReviewsDTO;
+import com.beautyhub.services.ReviewsService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.util.List;
 
 @RestController
-@RequestMapping("/reviews")
-@Validated
+@RequestMapping("/api/reviews")
 public class ReviewsController {
+    private final ReviewsService service;
 
-    @PostMapping("/create")
-    public ResponseEntity<String> createReview(@Valid @RequestBody ReviewsDTO reviewsDTO) {
-        // Логика для создания отзыва
-        return ResponseEntity.ok("Отзыв успешно создан");
+    public ReviewsController(ReviewsService service) {
+        this.service = service;
+    }
+
+    @PostMapping
+    public ResponseEntity<ReviewsDTO> create(@RequestBody ReviewsDTO reviewsDTO) {
+        return ResponseEntity.ok(service.createReview(reviewsDTO));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> getReviewById(@PathVariable Long id) {
-        // Логика для получения отзыва по ID
-        return ResponseEntity.ok("Информация об отзыве с ID: " + id);
+    public ResponseEntity<ReviewsDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getReviewById(id));
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateReview(@PathVariable Long id, @Valid @RequestBody ReviewsDTO reviewsDTO) {
-        // Логика для обновления отзыва
-        return ResponseEntity.ok("Отзыв с ID " + id + " успешно обновлён");
+    @GetMapping("/by-master/{masterId}")
+    public ResponseEntity<List<ReviewsDTO>> getByMasterId(@PathVariable Long masterId) {
+        return ResponseEntity.ok(service.getReviewsByMasterId(masterId));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteReview(@PathVariable Long id) {
-        // Логика для удаления отзыва
-        return ResponseEntity.ok("Отзыв с ID " + id + " успешно удалён");
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<List<ReviewsDTO>> getByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(service.getReviewsByUserId(userId));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ReviewsDTO> update(@PathVariable Long id, @RequestBody ReviewsDTO reviewsDTO) {
+        return ResponseEntity.ok(service.updateReview(id, reviewsDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.deleteReview(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,38 +1,49 @@
 package com.beautyhub.controllers;
 
 import com.beautyhub.dto.MasterCardDTO;
+import com.beautyhub.services.MasterCardService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.util.List;
 
 @RestController
-@RequestMapping("/mastercards")
-@Validated
+@RequestMapping("/api/master-cards")
 public class MasterCardController {
+    private final MasterCardService service;
 
-    @PostMapping("/create")
-    public ResponseEntity<String> createMasterCard(@Valid @RequestBody MasterCardDTO masterCardDTO) {
-        // Логика для создания карточки мастера
-        return ResponseEntity.ok("Карточка мастера успешно создана");
+    public MasterCardController(MasterCardService service) {
+        this.service = service;
     }
 
-    @GetMapping("/{masterId}")
-    public ResponseEntity<String> getMasterCardByMasterId(@PathVariable Long masterId) {
-        // Логика для получения карточки мастера по ID мастера
-        return ResponseEntity.ok("Информация о карточке мастера с ID: " + masterId);
+    @PostMapping
+    public ResponseEntity<MasterCardDTO> create(@RequestBody MasterCardDTO masterCardDTO) {
+        return ResponseEntity.ok(service.createMasterCard(masterCardDTO));
     }
 
-    @PutMapping("/update/{masterId}")
-    public ResponseEntity<String> updateMasterCard(@PathVariable Long masterId, @Valid @RequestBody MasterCardDTO masterCardDTO) {
-        // Логика для обновления карточки мастера
-        return ResponseEntity.ok("Карточка мастера с ID " + masterId + " успешно обновлена");
+    @GetMapping("/{id}")
+    public ResponseEntity<MasterCardDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getMasterCardById(id));
     }
 
-    @DeleteMapping("/delete/{masterId}")
-    public ResponseEntity<String> deleteMasterCard(@PathVariable Long masterId) {
-        // Логика для удаления карточки мастера
-        return ResponseEntity.ok("Карточка мастера с ID " + masterId + " успешно удалена");
+    @GetMapping("/by-city")
+    public ResponseEntity<List<MasterCardDTO>> getByCity(@RequestParam String city) {
+        return ResponseEntity.ok(service.getMasterCardsByCity(city));
+    }
+
+    @GetMapping("/by-master/{masterId}")
+    public ResponseEntity<List<MasterCardDTO>> getByMasterId(@PathVariable Long masterId) {
+        return ResponseEntity.ok(service.getMasterCardsByMasterId(masterId));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MasterCardDTO> update(@PathVariable Long id, @RequestBody MasterCardDTO masterCardDTO) {
+        return ResponseEntity.ok(service.updateMasterCard(id, masterCardDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.deleteMasterCard(id);
+        return ResponseEntity.noContent().build();
     }
 }
